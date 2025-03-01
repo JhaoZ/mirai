@@ -1,4 +1,5 @@
 "use client";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from "react";
 import { columnData, CardType, initialCardData } from "./dataObject";
 import { onDragCard, onDropCard } from "./cardFunctionality";
@@ -39,8 +40,13 @@ export default function KanbanBoard(props: Props) {
             }
         })
         .catch((err) => console.log(err));
+        
 
     }, []);
+
+    const onInfoClick = (card: CardType) => {
+        
+    };
 
    
 
@@ -86,9 +92,37 @@ export default function KanbanBoard(props: Props) {
 
                                     {
                                         cards.filter((c) => c.category === items.id).map((c) => (
-                                            <div key={c.ticket_num} className="bg-gray-200 p-4 h-32 mb-2 rounded" draggable onDragStart={()=>{onDragCard(c.ticket_num, c.category, setDraggableElement);}}>
-                                                <p>{c.ticket_num} - {c.title}</p>
-                                            </div>
+                                            <div 
+    key={c.ticket_num} 
+    className="bg-white shadow-lg p-4 h-36 mb-3 rounded-lg border-l-4 border-green-500 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl flex flex-col relative"
+    draggable
+    onDragStart={() => onDragCard(c.ticket_num, c.category, setDraggableElement)}
+>
+                    {/* Ticket Number Badge */}
+                    <div className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-md shadow">
+                        {c.ticket_num}
+                    </div>
+
+                            <button 
+                                className="absolute top-2 right-2 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded-full shadow transition"
+                                onClick={() => onInfoClick(c)} // Replace with your handler function
+                            >
+                                ℹ️
+                            </button>
+
+                    {/* Card Content */}
+                    <div className="mt-2">
+                        {/* Title (Smaller Font) */}
+                        <p className="text-md font-semibold text-gray-800 tracking-wide">
+                            {c.title}
+                        </p>
+
+
+                        {/* Deadline */}
+                        <p className="text-xs text-gray-500">Deadline: {c.deadline}</p>
+                    </div>
+</div>
+                                     
                                         ))
                                     }
                                     
