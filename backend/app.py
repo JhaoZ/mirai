@@ -186,16 +186,13 @@ def get_ticket_detail():
     commit_list = []
     for commit_hash, (commit_message, content) in all_commits.items():
         # check if the ticket number appears in the commit_message
-
-        print(commit_message)
-
         if curr_num in commit_message:
             curr_json = {
                 'hash': commit_hash,
                 'message': commit_message,
                 'content': content
             }
-            commit_list.append()
+            commit_list.append(curr_json)
         if len(commit_list) >= limit:
             break 
     
