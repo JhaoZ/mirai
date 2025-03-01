@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { columnData, cardData } from "./dataObject";
+import React, { useState, useEffect } from "react";
+import { columnData, CardType, initialCardData } from "./dataObject";
 import { onDragCard, onDropCard } from "./cardFunctionality";
 
 /*
@@ -10,9 +10,36 @@ Reference tutorial for base code: https://youtu.be/bwIs_eOe6Z8?si=d0tvm3x5YJspTk
 interface Props {}
 
 export default function KanbanBoard(props: Props) {
-    const [cards, setCards] = useState(cardData); //sets up the cards inside the kanban board
+    const [cards, setCards] = useState<CardType[]>([]); //sets up the cards inside the kanban board
     const [kanbans, setKanbans] = useState(columnData); //sets up the kanban column names 
     const [draggableElement, setDraggableElement] = useState<{card_id: string, column_id: string} | null>(null);
+
+    
+    //endpoint for getting tickets 
+    useEffect(() => {
+        fetch("http://127.0.0.1:5000/get_tickets")
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.Data) {
+                console.log(data.Data);
+                let tickets = JSON.parse(data.Data);
+                console.log(tickets)
+                const converted = tickets.map((t : any) => ({
+                    id: t.ticket_num,
+                    column_id: t.category,
+                    text: t.description,
+                    deadline: t.deadline,
+                    priority: t.priority
+                }));
+                console.log(converted);
+                setCards(converted);
+            }
+        })
+        .catch((err) => console.log(err));
+
+    }, []);
+    
+
 
     return (
         <>

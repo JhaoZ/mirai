@@ -97,8 +97,8 @@ def add_member():
 
     try:
         name = str(request.json['Name'])
-        working_description = str(request.json['Working_Description'])
         age = str(request.json['Age'])
+        working_description = str(request.json['Working_Description'])
         title = str(request.json['Title'])
         year_of_exp = str(request.json['Years_of_Experience'])
         employee_id = str(request.json['Id'])

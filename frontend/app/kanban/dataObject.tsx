@@ -3,53 +3,42 @@
 
 export const columnData = [
     {
-        id: 'todo',
+        id: 'TODO',
         text: 'To Do'
     },
     {
-        id: 'inProgress',
+        id: 'PROGRESS',
         text: 'In Progress'
     },
     {
-        id: 'qa',
+        id: 'QA',
         text: 'QA'
     },
     {
-        id: 'pr',
+        id: 'PR',
         text: 'PR'
     },
     {
-        id: 'closed',
+        id: 'CLOSED',
         text: 'Closed'
     },
 ];
 
-//ids need to be unique to each and every card.
-export const cardData = [
-    {
-        id: 'abc',
-        column_id: 'todo',
-        text: 'Card 1'
-    },
-    {
-        id: 'abcd',
-        column_id: 'inProgress',    
-        text: 'Card 5'
-    },
-    {
-        id: 'abcde',
-        column_id: 'todo',
-        text: 'Card 3'
-    },
-    {
-        id: 'abcdef',
-        column_id: 'inProgress',
-        text: 'Card 4'
-    },
-    {
-        id: 'abcdefg',
-        column_id: 'todo',
-        text: 'Card 2'
-    },
 
+export interface CardType {
+    id: string; //this is ticket_number on the backend 
+    column_id: string; //this maps to category on the backend 
+    text: string; //this maps to description on the backend
+    deadline: string; //this maps to deadline on the backend
+    priority: number; //this map to priority on the backend
+    assignments: string[] //this maps to assignments on the backend
+}
+
+export const initialCardData: CardType[] = [
+    // { id: 'abc', column_id: 'todo', text: 'Card 1' },
+    // { id: 'abcd', column_id: 'inProgress', text: 'Card 5' },
+    // { id: 'abcde', column_id: 'todo', text: 'Card 3' },
+    // { id: 'abcdef', column_id: 'inProgress', text: 'Card 4' },
+    // { id: 'abcdefg', column_id: 'todo', text: 'Card 2' },
+    // { id: 'abcdefh', column_id: 'todo', text: 'Card 6' }
 ];

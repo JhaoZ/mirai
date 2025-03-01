@@ -1,4 +1,6 @@
 
+
+
 export function onDragCard (id: string, col_id: string, setDraggedElement: Function) {
     setDraggedElement({
         card_id: id,
