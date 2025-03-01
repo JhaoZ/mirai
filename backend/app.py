@@ -5,6 +5,7 @@ from member import MemberData
 from project import Project
 from git_handler import GitHubRepo
 from ticket import Ticket
+import json
 
 
 app = Flask(__name__)
@@ -92,10 +93,12 @@ def add_member():
     if not currentProject:
         return jsonify({"Error": "Project not initialized"}), 400
 
+    resume_file = None
+
     try:
         name = str(request.json['Name'])
         working_description = str(request.json['Working_Description'])
-        resume_file = request.json['Resume']
+        age = str(request.json['Age'])
         title = str(request.json['Title'])
         year_of_exp = str(request.json['Years_of_Experience'])
         employee_id = str(request.json['Id'])
@@ -103,13 +106,18 @@ def add_member():
         return jsonify({"Error": "Parsing Error for Member"}), 400
 
 
-    # parse the resume
+    if "Resume" in request.json:
+        resume_file = request.json['Resume']
 
-    try:
-        reader = PyPDF2.PdfReader(resume_file)
-        resume = "".join([page.extract_text() or "" for page in reader.pages])
-    except Exception as e:
-        return jsonify({"Error": "Could not Parse Resume"}), 400
+    # parse the resume
+    resume = ""
+
+    if resume_file is not None:
+        try:
+            reader = PyPDF2.PdfReader(resume_file)
+            resume = "".join([page.extract_text() or "" for page in reader.pages])
+        except Exception as e:
+            return jsonify({"Error": "Could not Parse Resume"}), 400
 
     current_member = MemberData(name, age, working_description, resume, title, year_of_exp, employee_id)
     currentProject.addMember(current_member)
@@ -125,14 +133,72 @@ def get_tickets():
     if currentProject is None:
         return jsonify({"Error": "Could not get tickets because current project has not been inited"})
 
-    return jsonify({"Data":currentProject.get_tickets_json()})
+    return jsonify({"Data":currentProject.get_tickets_json()}), 200
 
-@app.route("/get_ticket_detail", methods = ['GET'])
+@app.route("/get_single_ticket", methods = ['GET'])
+def get_single_ticket():
+    global currentProject
+    
+    if not currentProject:
+        return jsonify({"Error": "Project not initialized"}), 400
+
+    try:
+        ticket_num = request.json["ticket_num"]
+    except Exception as e:
+        print(e)
+        return jsonify({"Error": "Ticket Number not found in request"}), 400
+    
+    # GET ALL TICKETS
+    ticket_jsons = currentProject.get_tickets_json()
+
+    curr_ticket = None
+
+    for ticket in ticket_jsons:
+        if ticket['ticket_num'] == ticket_num:
+            curr_ticket = ticket
+            break 
+    
+    if curr_ticket is None:
+        return jsonify({"Error": "Could not find ticket"}), 400
+    
+    return jsonify({"Success": curr_ticket}), 200
+
+@app.route("/analyze_commit", methods = ["GET"])
+def analyze_commit():
+    global currentProject
+    global gitHandler
+
+    commit_hash = None
+    try:
+        commit_hash = str(request.json['hash'])
+    except Exception as e:
+        print(e)
+        return jsonify({"Error": "Hash not present in request"}), 400
+
+    if commit_hash is None:
+        return jsonify({"Error": "Error getting hash from request"}), 400
+
+    commit = gitHandler.get_commit_content(commit_hash)
+    if commit is None:
+        return jsonify({"Error": "Could not get commit based on hash"}), 400
+    
+    commit_message, commit_content = commit
+
+    analyzation = currentProject.analyze_commit(commit_content)
+
+    return jsonify({"Success": analyzation}), 400
+
+    
+
+    
+
+
+@app.route("/get_ticket_github_detail", methods = ['GET'])
 def get_ticket_detail():
 
     global currentProject
     global gitHandler
-    
+
     if not gitHandler:
         return jsonify({"Error": "Github not set up correctly"}), 400
     
@@ -156,6 +222,7 @@ def get_ticket_detail():
         return jsonify({"Error": "Could not parse ticket number"}), 400
 
 
+    gitHandler.fetch_new_commits()
     all_commits = gitHandler.get_all_commits()
 
     tickets = currentProject.compile_tickets()
@@ -171,22 +238,21 @@ def get_ticket_detail():
     # now I need to search the commits, its in order
 
     # LIMIT OF 5 by default
-
     commit_list = []
-    for commit_hash, (commit_message, content) in all_commits.items():
+    for commit_hash, (commit_message, _) in all_commits.items():
         # check if the ticket number appears in the commit_message
         if curr_num in commit_message:
             curr_json = {
                 'hash': commit_hash,
                 'message': commit_message,
-                'content': content
+                'url': gitHandler.get_commit_link(commit_hash)
             }
-            commit_list.append()
+            commit_list.append(curr_json)
         if len(commit_list) >= limit:
             break 
     
     commit_list = json.dumps(commit_list)
-    return jsonify({"Success": commit_list}), 400
+    return jsonify({"Success": commit_list}), 200
         
 
 
