@@ -1,5 +1,5 @@
 from google import genai
-import google.generativeai as genai
+# import google.generativeai as genai
 
 import os
 from dotenv import load_dotenv
@@ -11,18 +11,18 @@ load_dotenv()
 
 model_type = "OPENAI"
 
-KEY = os.getenv("GEMINI_KEY")
-genai.configure(api_key = KEY)
-model = "gemini-2.0-flash"
-project_model = genai.GenerativeModel(
-    model_name = model,
-    system_instruction = [
-        'You are an A.I. project manager that will help a team plan and build a project.',
-        'You will help this team break apart a project into managable JIRA-tickets based on the members and deadline',
-        'You will sometimes also facilitate standups and modify the jira tickets based on what people say',
-        'Always return dates in MM/DD/YY format'
-    ]
-)
+# KEY = os.getenv("GEMINI_KEY")
+# openai.configure(api_key = KEY)
+# model = "gemini-2.0-flash"
+# project_model = genai.GenerativeModel(
+#     model_name = model,
+#     system_instruction = [
+#         'You are an A.I. project manager that will help a team plan and build a project.',
+#         'You will help this team break apart a project into managable JIRA-tickets based on the members and deadline',
+#         'You will sometimes also facilitate standups and modify the jira tickets based on what people say',
+#         'Always return dates in MM/DD/YY format'
+#     ]
+# )
 
 
 client = OpenAI(api_key=os.getenv("OPENAI_KEY"))

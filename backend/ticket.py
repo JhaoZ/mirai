@@ -16,7 +16,7 @@ def next_ticket_number():
 class Ticket:
 
 
-
+    dev_type = ""
     title = ""
     description = ""
     assignments = []
@@ -27,7 +27,8 @@ class Ticket:
 
 
 
-    def __init__(self, title, description, assignments, deadline, category, priority, ticket_num = None):
+    def __init__(self, dev_type, title, description, assignments, deadline, category, priority, ticket_num = None):
+        self.dev_type = dev_type
         self.title = title
         self.description = description
         self.assignments = assignments
@@ -42,6 +43,7 @@ class Ticket:
 
     def __str__(self):
         temp = {
+            'dev_type':self.dev_type,
             'title': self.title,
             'ticket_num': self.ticket_num,
             'description': self.description,
@@ -55,6 +57,7 @@ class Ticket:
     
     def get_json(self):
         temp = {
+            'dev_type':self.dev_type,
             'title': self.title,
             'ticket_num': self.ticket_num,
             'description': self.description,

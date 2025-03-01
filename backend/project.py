@@ -17,6 +17,8 @@ class Project:
     pr = []
     closed = []
 
+    dev_storage = {}
+
 
     def __init__(self, title = "", description = ""):
         self.title = title
@@ -42,6 +44,7 @@ class Project:
         self.members.append(member)
 
     def make_ticket_from_json(self, ticket_json):
+        dev_type = str(ticket_json['dev_type'])
         title = str(ticket_json['title'])
         description = str(ticket_json['description'])
         assignments = ticket_json['assignments']
@@ -52,9 +55,9 @@ class Project:
 
         if "ticket_num" in ticket_json:
             ticket_num = str(ticket_json['ticket_num'])
-            t = Ticket(title, description, assignments, deadline, category, priority, ticket_num)
+            t = Ticket(dev_type, title, description, assignments, deadline, category, priority, ticket_num)
         else:
-            t = Ticket(title, description, assignments, deadline, category, priority)
+            t = Ticket(dev_type, title, description, assignments, deadline, category, priority)
         
         return t
 
@@ -62,26 +65,50 @@ class Project:
     def distribute_tickets(self, tickets):
         # ERASES THE TICKETS
 
+        self.dev_storage = {} #dev_type -> {"todo":[], "progress":[], "qa":[]...}
+
         self.todo = []
         self.inprogress = []
         self.qa = []
         self.pr = []
         self.closed = []
 
+        ticket_counter = 0 
 
         for t in tickets:
+            ticket_counter += 1
             ticket = self.make_ticket_from_json(t)
+            dev_type = ticket.dev_type
+
+            if dev_type not in self.dev_storage:
+                self.dev_storage[dev_type] = {
+                    "TODO": [],
+                    "PROGRESS": [],
+                    "QA": [],
+                    "PR": [],
+                    "CLOSED": [],
+                }
             
-            if ticket.category == "TODO":
-                self.todo.append(ticket)
-            elif ticket.category == "PROGRESS":
-                self.inprogress.append(ticket)
-            elif ticket.category == "QA":
-                self.qa.append(ticket)
-            elif ticket.category == "PR":
-                self.pr.append(ticket)
-            elif ticket.category == "CLOSED":
-                self.closed.append(ticket)
+            if ticket.category in self.dev_storage[dev_type]:
+                self.dev_storage[dev_type][ticket.category].append(ticket)
+
+        print(f"Total number of tickets: {ticket_counter}")
+
+
+
+        # for t in tickets:
+        #     ticket = self.make_ticket_from_json(t)
+            
+        #     if ticket.category == "TODO":
+        #         self.todo.append(ticket)
+        #     elif ticket.category == "PROGRESS":
+        #         self.inprogress.append(ticket)
+        #     elif ticket.category == "QA":
+        #         self.qa.append(ticket)
+        #     elif ticket.category == "PR":
+        #         self.pr.append(ticket)
+        #     elif ticket.category == "CLOSED":
+        #         self.closed.append(ticket)
         
 
     def generate_project(self):
@@ -108,11 +135,24 @@ class Project:
         for member in self.members:
             prompt += member.get_prompt_description()
             prompt += "\n"
+ 
         
-        prompt += "Please respond with a list of tickets in a json format. Here is the expected format: \n"
+        prompt += '''Please respond with a list of tickets in a json format for each of the following categories of development: 
+            1. Planning & Research - "P&R"
+            2. UX/UI Design        - "Design"
+            3. Backend Development - "Backend"
+            4. Frontend Development - "Frontend"
+            5. Admin Dashboard     - "Admin"
+            6. Marketing & Outreach - "Marketing"
+
+        Note, not all projects will need tickets for all of these; choose depending on the project type. The number of tickets within each category also does not need to be uniform. But please provide at least 10 tickets.
+        
+        Here is the expected format: \n
+        '''
 
         prompt += '''
         {
+            'dev_type': the id/number representing one of the aformentioned categories of development, I made those clear with the dash and then the word I want to be used as the id.
             'title': The Ticket Title
             'description': Description of the ticket and what needs to be done
             'assignments': [List of members assigned to this ticket, by employee ID]
@@ -129,8 +169,7 @@ class Project:
             response = prompt_project(prompt=prompt)
         except Exception as e:
             return -1
-
-        
+                
         #    response = response[7:-3] # cause gemini keeps giving markdown
 
         curr = json.loads(response)
@@ -150,20 +189,29 @@ class Project:
 
     def compile_tickets(self):
         total_tickets = []
-        for i in self.todo:
-            total_tickets.append(i)
         
-        for i in self.inprogress:
-            total_tickets.append(i)
+        # dev_type -> {"todo":[], "progress":[], "qa":[]...}
 
-        for i in self.qa:
-            total_tickets.append(i)
+        for type, tickets in self.dev_storage.items():
+            for ticket in tickets.values():
+                if ticket != []:
+                    total_tickets += ticket
+        # print(f"TOTAL TICKETS: {total_tickets}")
 
-        for i in self.pr:
-            total_tickets.append(i)
+        # for i in self.todo:
+        #     total_tickets.append(i)
+        
+        # for i in self.inprogress:
+        #     total_tickets.append(i)
 
-        for i in self.closed:
-            total_tickets.append(i)
+        # for i in self.qa:
+        #     total_tickets.append(i)
+
+        # for i in self.pr:
+        #     total_tickets.append(i)
+
+        # for i in self.closed:
+        #     total_tickets.append(i)
 
         return total_tickets
     
@@ -175,26 +223,36 @@ class Project:
         return end
 
     def debug_tickets(self):
+        print(self.dev_storage)
+        for type, tickets in self.dev_storage.items(): # {key -> []}
+            # print(tickets)
+            print(f"{type}: ")
+            for ticket in tickets.values():
+                for t in ticket:
+                    print(str(t))
+
+
+
+
+        # print("TODO: ")
+        # for i in self.todo:
+        #     print(str(i))
         
-        print("TODO: ")
-        for i in self.todo:
-            print(str(i))
-        
-        print("IN PROGRESS:")
-        for i in self.inprogress:
-            print(str(i))
+        # print("IN PROGRESS:")
+        # for i in self.inprogress:
+        #     print(str(i))
 
-        print("QA: ")
-        for i in self.qa:
-            print(str(i))
+        # print("QA: ")
+        # for i in self.qa:
+        #     print(str(i))
 
-        print("PR: ")
-        for i in self.pr:
-            print(str(i))
+        # print("PR: ")
+        # for i in self.pr:
+        #     print(str(i))
 
-        print("CLOSED: ")
-        for i in self.closed:
-            print(str(i))
+        # print("CLOSED: ")
+        # for i in self.closed:
+        #     print(str(i))
 
         
 
@@ -219,6 +277,8 @@ class Project:
 
         prompt += self.get_total_ticket_as_str() + '\n'
 
+        # print(f"TICKETS INPUTTED INTO PROMPT: {self.get_total_ticket_as_str()}")
+
 
         prompt += "Here are the members of the team: \n"
 
@@ -239,12 +299,12 @@ class Project:
         Keep all details of the tickets the same when you return them to me.
         '''
 
-        prompt += "Please respond with a list of tickets in a json format. Here is the expected format: \n"
-
+        prompt += "Here is the expected format: \n"
         prompt += '''
         {
+            'dev_type': [P&R,Design,Backend,Frontend,Admin,Marketing] - never change the ticket dev_type
             'title': The Ticket Title
-            'ticket_num': Ticker Number (if you made new tickets, do not add this field)
+            'ticket_num': Ticket Number (if you made new tickets, do not add this field) - never change the ticket number, it should be the same as before
             'description': Description of the ticket and what needs to be done
             'assignments': [List of members assigned to this ticket, by employee ID]
             'deadline': Date for when this ticket should be completed
@@ -253,9 +313,12 @@ class Project:
         }\n
         '''
 
-        prompt += "DO NOT REPLY WITH ANYTHING OTHER THAN THE TICKETS in a list of JSON as your output will be directly used in the backend of the jira board. Give the raw json text only, do not add any markdown.\n"
+        prompt += "DO NOT REPLY WITH ANYTHING OTHER THAN THE TICKETS in a list of JSON as your output will be directly used in the backend of the jira board. GIVE THE RAW JSON TEXT ONLY, DO NOT ADD ANY MARKDOWN. GIVE THE RAW JSON TEXT ONLY, DO NOT ADD ANY MARKDOWN. GIVE THE RAW JSON TEXT ONLY, DO NOT ADD ANY MARKDOWN. GIVE THE RAW JSON TEXT ONLY, DO NOT ADD ANY MARKDOWN.\n"
 
         prompt += "!!!REMINDER TO RETURN ALL TICKETS I GIVE YOU AND NEW ONES NEEDED"
+        
+        prompt += "DO NOT CHANGE THE TICKET NUMBER FIELD IF IT IS ALREADY GIVEN TO YOU"
+
         try: 
             response = prompt_project(prompt=prompt)
         except Exception as e:
@@ -265,6 +328,8 @@ class Project:
         # response = response[7:-3] # cause gemini keeps giving markdown
 
         curr = json.loads(response)
+
+        print(curr)
         
         self.distribute_tickets(curr)
 

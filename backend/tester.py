@@ -3,6 +3,8 @@ from member import MemberData
 
 proj = Project()
 
+# Cat Adoption App
+# A user-friendly app that connects adopters with shelters to find and adopt cats easily as well as helping people adopt stray cats off the street.
 
 title = input()
 orz = input()
