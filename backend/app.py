@@ -180,9 +180,14 @@ def get_ticket_detail():
 
     # LIMIT OF 5 by default
 
+    print(all_commits)
+
     commit_list = []
     for commit_hash, (commit_message, content) in all_commits.items():
         # check if the ticket number appears in the commit_message
+
+        print(commit_message)
+
         if curr_num in commit_message:
             curr_json = {
                 'hash': commit_hash,
@@ -194,7 +199,7 @@ def get_ticket_detail():
             break 
     
     commit_list = json.dumps(commit_list)
-    return jsonify({"Success": commit_list}), 400
+    return jsonify({"Success": commit_list}), 200
         
 
 
