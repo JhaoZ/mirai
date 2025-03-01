@@ -1,15 +1,22 @@
+import os
 from git_handler import GitHubRepo
 
-# Set up repository link (using a public repository)
-repo_link = "https://github.com/JhaoZ/mirai"  # You can replace this with a smaller test repo
+# set up repo link and GitHub token
+repo_link = "https://github.com/JhaoZ/mirai"  # Replace with a small test repo if needed
 
-# Create GitHubRepo instance without authentication
-repo = GitHubRepo(repo_link, token=None)  # Modify GitHubRepo to handle `None` token
+# create GitHubRepo instance
+repo = GitHubRepo(repo_link, token=None)
 
-# Fetch new commits
-try:
-    new_commits = repo.fetch_new_commits()
-    for commit_hash, (commit_message, content) in new_commits.items():
-        print(f"Commit: {commit_hash}\nMessage: {commit_message}\nContent:\n{content}\n{'-'*80}")
-except Exception as e:
-    print(f"Error fetching commits: {e}")
+# fetch new commits
+new_commits = repo.fetch_new_commits()
+
+# print newly fetched commits
+print("New Commits:")
+for commit_hash, (commit_message, content) in new_commits.items():
+    print(f"Commit: {commit_hash}\nMessage: {commit_message}\nContent:\n{content}\n{'-'*80}")
+
+# print all stored commits so far
+all_commits = repo.get_all_commits()
+print("\nAll Stored Commits:")
+for commit_hash, (commit_message, content) in all_commits.items():
+    print(f"Commit: {commit_hash}\nMessage: {commit_message}\nContent:\n{content}\n{'-'*80}")

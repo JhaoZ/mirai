@@ -88,4 +88,14 @@ class GitHubRepo:
         
         return new_commits
 
-        
+    def get_commit_content(self, commit_hash):
+        """Return the commit message and file contents for a given commit hash."""
+        if commit_hash in self.commit_map:
+            return self.commit_map[commit_hash]
+        else:
+            return None  
+    
+    def get_all_commits(self):
+        """Return all stored commits and their content."""
+        return self.commit_map
+            
