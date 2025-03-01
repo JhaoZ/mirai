@@ -1,5 +1,6 @@
 
 import random
+import json
 
 seen = set()
 
@@ -9,6 +10,7 @@ def next_ticket_number():
         curr = random.randint(100000, 999999)
     seen.add(curr)
     return str(curr)
+
 
 
 class Ticket:
@@ -50,4 +52,17 @@ class Ticket:
         }
 
         return str(temp)
+    
+    def get_json(self):
+        temp = {
+            'title': self.title,
+            'ticket_num': self.ticket_num,
+            'description': self.description,
+            'assignments': self.assignments,
+            'deadline': self.deadline,
+            'category': self.category,
+            'priority': self.priority
+        }
+
+        return temp
 

@@ -52,7 +52,14 @@ def init_project_details():
     
     currentProject.add_details(title, description, deadline, techstack, shareholder, intensity)
     return jsonify({"Success": "Project Details Added"}), 200
-        
+
+@app.route("/start_project", methods = ['PUT'])
+def start_project():
+    status = currentProject.generate_project()
+    if status == 1:
+        return jsonify({"Success": "Project generated succesfully"}), 200
+    else:
+        return jsonify({"Error": "Project generation failed"}), 400
 
 @app.route('/add_member', methods = ['PUT'])
 def add_member():
@@ -84,4 +91,9 @@ def add_member():
     return jsonify({"Success": "Member Added"}), 200
 
 
+@app.route("/get_tickets", methods = ["GET"])
+def get_tickets():
+    if currentProject is None:
+        return jsonify({"Error": "Could not get tickets because current project has not been inited"})
 
+    return jsonify({"Data":currentProject.get_tickets_json()})
