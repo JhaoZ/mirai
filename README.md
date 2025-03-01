@@ -1,6 +1,6 @@
 # mirai
 
-![mirai](sprite-0011.png)
+![mirai](Sprite-0011.png)
 
 
 Hackillinois 2025
