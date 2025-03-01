@@ -36,11 +36,3 @@ export interface CardType {
     dev_type: string; // dev type for which board
 }
 
-export const initialCardData: CardType[] = [
-    // { id: 'abc', column_id: 'todo', text: 'Card 1' },
-    // { id: 'abcd', column_id: 'inProgress', text: 'Card 5' },
-    // { id: 'abcde', column_id: 'todo', text: 'Card 3' },
-    // { id: 'abcdef', column_id: 'inProgress', text: 'Card 4' },
-    // { id: 'abcdefg', column_id: 'todo', text: 'Card 2' },
-    // { id: 'abcdefh', column_id: 'todo', text: 'Card 6' }
-];
