@@ -317,7 +317,11 @@ class Project:
         {
             'dev_type': [P&R,Design,Backend,Frontend,Admin,Marketing] - never change the ticket dev_type
             'title': The Ticket Title
+<<<<<<< HEAD
             'ticket_num': Ticket Number (if you made new tickets, do not add this field)
+=======
+            'ticket_num': Ticket Number (if you made new tickets, do not add this field) - never change the ticket number, it should be the same as before
+>>>>>>> b8855745f949f7db4cea37a6a529b28190581048
             'description': Description of the ticket and what needs to be done
             'assignments': [List of members assigned to this ticket, by employee ID]
             'deadline': Date for when this ticket should be completed
