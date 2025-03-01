@@ -3,6 +3,8 @@ from flask_cors import CORS, cross_origin
 import PyPDF2
 from member import MemberData
 from project import Project
+from git_handler import GitHubRepo
+from ticket import Ticket
 
 
 app = Flask(__name__)
@@ -10,6 +12,7 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 currentProject = None
+gitHandler = None
 
 
 
@@ -28,6 +31,7 @@ def init_project_details():
         title = str(request['Title'])
         description = str(request['Description'])
         github_link = str(request['Github_Link'])
+        github_token = str(request['Github_Token'])
     except Exception as e:
         return jsonify({"Error": "No Description or Title provided"}), 400
     
@@ -51,6 +55,7 @@ def init_project_details():
         intensity = request["Intensity"]
     
     currentProject.add_details(title, description, deadline, techstack, shareholder, intensity)
+    gitHandler = GitHubRepo(github_link, github_token)
     return jsonify({"Success": "Project Details Added"}), 200
 
 @app.route("/start_project", methods = ['PUT'])
@@ -97,3 +102,30 @@ def get_tickets():
         return jsonify({"Error": "Could not get tickets because current project has not been inited"})
 
     return jsonify({"Data":currentProject.get_tickets_json()})
+
+@app.route("/get_ticket_detail", methods = ['GET'])
+def get_ticket_detail():
+    if not gitHandler:
+        return jsonify({"Error": "Github not set up correctly"}), 400
+    
+    if "ticket_num" not in request:
+        return jsonify({"Error": "Ticket Num Does Not Exist"}), 400
+
+
+    curr_num = request['ticker_num']
+
+    all_commits = gitHandler.get_all_commits()
+
+    tickets = currentProject.compile_tickets()
+    curr_ticket = None
+    for ticket in tickets:
+        if ticket.ticket_num == curr_num:
+            curr_ticket = ticket
+            break 
+    
+    if curr_ticket is None:
+        return jsonify({"Error": "Ticker Number not found"}), 400
+
+    # now I need to search the commits, its in order
+
+    # LIMIT OF 5

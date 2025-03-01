@@ -1,6 +1,9 @@
 import requests
 import base64
 
+# self.commit.map
+# hash -> (commit msg, changes)
+
 class GitHubRepo:
     def __init__(self, repo_url, token):
         """Initialize the GitHubRepo object with the repository URL and authentication token."""

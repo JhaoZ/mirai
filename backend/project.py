@@ -26,8 +26,9 @@ class Project:
         self.shareholder =""
         self.intensity = ""
         self.github_link = ""
+        self.github_token = ""
 
-    def add_details(self, title, description, deadline = "", techstack ="", shareholder = "", intensity = "", github_link = ""):
+    def add_details(self, title, description, deadline = "", techstack ="", shareholder = "", intensity = "", github_link = "", github_token = ""):
         self.title = title
         self.description = description
         self.deadline = deadline
@@ -35,6 +36,7 @@ class Project:
         self.shareholder  = shareholder
         self.intensity = intensity
         self.github_link = github_link
+        self.github_token = github_token
 
     def addMember(self, member: MemberData):
         self.members.append(member)
