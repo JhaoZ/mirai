@@ -92,10 +92,12 @@ def add_member():
     if not currentProject:
         return jsonify({"Error": "Project not initialized"}), 400
 
+    resume_file = None
+
     try:
         name = str(request.json['Name'])
         working_description = str(request.json['Working_Description'])
-        resume_file = request.json['Resume']
+        age = str(request.json['Age'])
         title = str(request.json['Title'])
         year_of_exp = str(request.json['Years_of_Experience'])
         employee_id = str(request.json['Id'])
@@ -103,13 +105,18 @@ def add_member():
         return jsonify({"Error": "Parsing Error for Member"}), 400
 
 
-    # parse the resume
+    if "Resume" in request.json:
+        resume_file = request.json['Resume']
 
-    try:
-        reader = PyPDF2.PdfReader(resume_file)
-        resume = "".join([page.extract_text() or "" for page in reader.pages])
-    except Exception as e:
-        return jsonify({"Error": "Could not Parse Resume"}), 400
+    # parse the resume
+    resume = ""
+
+    if resume_file is not None:
+        try:
+            reader = PyPDF2.PdfReader(resume_file)
+            resume = "".join([page.extract_text() or "" for page in reader.pages])
+        except Exception as e:
+            return jsonify({"Error": "Could not Parse Resume"}), 400
 
     current_member = MemberData(name, age, working_description, resume, title, year_of_exp, employee_id)
     currentProject.addMember(current_member)
@@ -132,7 +139,7 @@ def get_ticket_detail():
 
     global currentProject
     global gitHandler
-    
+
     if not gitHandler:
         return jsonify({"Error": "Github not set up correctly"}), 400
     
