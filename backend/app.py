@@ -131,9 +131,59 @@ def get_tickets():
     global gitHandler
 
     if currentProject is None:
-        return jsonify({"Error": "Could not get tickets because current project has not been inited"})
+        return jsonify({"Error": "Could not get tickets because current project has not been inited"}), 400
 
     return jsonify({"Data":currentProject.get_tickets_json()}), 200
+
+
+@app.route("/update_tickets", methods = ["POST"])
+def update_tickets():
+    global currentProject
+    global gitHandler
+
+    if currentProject is None:
+        return jsonify({"Error": "Could not get tickets because current project has not been inited"}), 400
+    
+    try:
+        tickets = list(request.json['tickets'])
+    except:
+        return jsonify({"Error": "Missing/Incorrect Input"}), 400
+
+    print(tickets)
+
+    currentProject.distribute_tickets(tickets)
+    
+
+    return jsonify({"Success": "Updated Tickets."}), 200
+
+
+@app.route("/add_ticket", methods=['POST'])
+def add_ticket():
+    global currentProject
+    if currentProject is None:
+        return jsonify({"Error": "Could not add ticket because current project has not been inited"}), 400
+
+    print("before the try")
+    try:
+        dev_type = str(request.json['dev_type'])
+        title = str(request.json['title'])
+        description = str(request.json['description'])
+        assignments = list(request.json['assignments'])
+        deadline = str(request.json["deadline"])
+        category = str(request.json["category"])
+        priority = int(request.json["priority"])
+
+    except Exception as e:
+        return jsonify({"Error": "Missing Input"}), 400
+    
+    print("here")
+
+    ticket = Ticket(dev_type, title, description, assignments, deadline, category, priority)
+    
+    currentProject.addTicket(ticket)
+
+    return jsonify({"Success": "Added new ticket."}), 200
+
 
 @app.route("/get_single_ticket", methods = ['GET'])
 def get_single_ticket():
