@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from "react";
 import { columnData, CardType } from "./dataObject";
 import { onDragCard, onDropCard } from "./cardFunctionality";
+import {useRouter} from 'next/router';
 
 /*
 Reference tutorial for base code: https://youtu.be/bwIs_eOe6Z8?si=d0tvm3x5YJspTkqg
@@ -15,7 +16,8 @@ export default function KanbanBoard(props: Props) {
     const [kanbans, setKanbans] = useState(columnData); //sets up the kanban column names 
     const [draggableElement, setDraggableElement] = useState<{ticket_num: string, category: string} | null>(null);
 
-    
+    const Router = useRouter();
+
     //endpoint for getting tickets 
     useEffect(() => {
         fetch("http://127.0.0.1:5000/get_tickets")
@@ -59,12 +61,21 @@ export default function KanbanBoard(props: Props) {
         .catch((error) => console.error("Error updating tickets:", error));
     }, [cards]); // Runs whenever `cards` changes
 
-
     const onInfoClick = (card: CardType) => {
-        
-    };
+        const queryParams = new URLSearchParams({
+            ticket_num: card.ticket_num,
+            category: card.category,
+            description: card.description,
+            deadline: card.deadline,
+            priority: card.priority.toString(), // Convert number to string
+            dev_type: card.dev_type,
+            title: card.title,
+            assignments: card.assignments.join(","), // Convert array to comma-separated string
+        }).toString();
 
-   
+        Router.push(`/card-details?${queryParams}`);
+    };
+    
 
 
     return (
