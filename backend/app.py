@@ -133,9 +133,67 @@ def get_tickets():
     if currentProject is None:
         return jsonify({"Error": "Could not get tickets because current project has not been inited"})
 
-    return jsonify({"Data":currentProject.get_tickets_json()})
+    return jsonify({"Data":currentProject.get_tickets_json()}), 200
 
-@app.route("/get_ticket_detail", methods = ['GET'])
+@app.route("/get_single_ticket", methods = ['GET'])
+def get_single_ticket():
+    global currentProject
+    
+    if not currentProject:
+        return jsonify({"Error": "Project not initialized"}), 400
+
+    try:
+        ticket_num = request.json["ticket_num"]
+    except Exception as e:
+        print(e)
+        return jsonify({"Error": "Ticket Number not found in request"}), 400
+    
+    # GET ALL TICKETS
+    ticket_jsons = currentProject.get_tickets_json()
+
+    curr_ticket = None
+
+    for ticket in ticket_jsons:
+        if ticket['ticket_num'] == ticket_num:
+            curr_ticket = ticket
+            break 
+    
+    if curr_ticket is None:
+        return jsonify({"Error": "Could not find ticket"}), 400
+    
+    return jsonify({"Success": curr_ticket}), 200
+
+@app.route("/analyze_commit", methods = ["GET"])
+def analyze_commit():
+    global currentProject
+    global gitHandler
+
+    commit_hash = None
+    try:
+        commit_hash = str(request.json['hash'])
+    except Exception as e:
+        print(e)
+        return jsonify({"Error": "Hash not present in request"}), 400
+
+    if commit_hash is None:
+        return jsonify({"Error": "Error getting hash from request"}), 400
+
+    commit = gitHandler.get_commit_content(commit_hash)
+    if commit is None:
+        return jsonify({"Error": "Could not get commit based on hash"}), 400
+    
+    commit_message, commit_content = commit
+
+    analyzation = currentProject.analyze_commit(commit_content)
+
+    return jsonify({"Success": analyzation}), 400
+
+    
+
+    
+
+
+@app.route("/get_ticket_github_detail", methods = ['GET'])
 def get_ticket_detail():
 
     global currentProject
@@ -180,17 +238,14 @@ def get_ticket_detail():
     # now I need to search the commits, its in order
 
     # LIMIT OF 5 by default
-
-    print(all_commits)
-
     commit_list = []
-    for commit_hash, (commit_message, content) in all_commits.items():
+    for commit_hash, (commit_message, _) in all_commits.items():
         # check if the ticket number appears in the commit_message
         if curr_num in commit_message:
             curr_json = {
                 'hash': commit_hash,
                 'message': commit_message,
-                'content': content
+                'url': gitHandler.get_commit_link(commit_hash)
             }
             commit_list.append(curr_json)
         if len(commit_list) >= limit:

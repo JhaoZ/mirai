@@ -102,3 +102,6 @@ class GitHubRepo:
         """Return all stored commits and their content."""
         return self.commit_map
             
+
+    def get_commit_link(self, commit_hash):
+        return self.commits_url + "/" + commit_hash
