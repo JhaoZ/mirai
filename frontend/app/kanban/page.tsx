@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { columnData, CardType, initialCardData } from "./dataObject";
+import { columnData, CardType } from "./dataObject";
 import { onDragCard, onDropCard } from "./cardFunctionality";
 
 /*
@@ -42,6 +42,23 @@ export default function KanbanBoard(props: Props) {
 
     }, []);
 
+    useEffect(() => {
+        fetch("http://127.0.0.1:5000/update_tickets", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                tickets: JSON.stringify(cards),
+            }),
+        })
+        .then((res) => res.json())
+        .then((data) => console.log("Updated tickets successfully:", data))
+        .catch((error) => console.error("Error updating tickets:", error));
+    }, [cards]); // Runs whenever `cards` changes
+
+
+
    
 
 
@@ -65,23 +82,7 @@ export default function KanbanBoard(props: Props) {
                                 onDragOver={(e) => {
                                     e.preventDefault();
                                 }}
-                                onDrop={async ()=>{
-                                    onDropCard(items.id, draggableElement, setCards);
-                                    try {
-                                        const response = await fetch("http://127.0.0.1:5000/update_tickets", {
-                                            method: "POST",
-                                            headers: {
-                                                "Content-Type": "application/json",
-                                            },
-                                            body: JSON.stringify({
-                                                'tickets': JSON.stringify(cards),
-                                            })
-                                        });
-                                        console.log(JSON.stringify(cards))
-                                    } catch (error) {
-                                        console.error(error);
-                                    }
-                                }}>
+                                onDrop={()=>{onDropCard(items.id, draggableElement, setCards);}}>
 
 
                                     {
