@@ -69,6 +69,26 @@ def init_project_details():
     gitHandler = GitHubRepo(github_link, github_token)
     return jsonify({"Success": "Project Details Added"}), 200
 
+@app.route("/get_project_title", methods=["GET"])
+def get_project_title():
+    global currentProject
+    global gitHandler
+
+    if not currentProject:
+        return jsonify({"Error": "Project not initialized"}), 400
+    
+    return jsonify({"Project Title": currentProject.title})
+
+@app.route("/get_project_description", methods=["GET"])
+def get_project_description():
+    global currentProject
+    global gitHandler
+
+    if not currentProject:
+        return jsonify({"Error": "Project not initialized"}), 400
+    
+    return jsonify({"Project Title": currentProject.description})
+
 @app.route("/start_project", methods = ['POST'])
 def start_project():
 
@@ -76,7 +96,7 @@ def start_project():
     global gitHandler
 
     if not currentProject:
-        return jsonify({"Error": "Project not initialized"})
+        return jsonify({"Error": "Project not initialized"}), 400
 
     status = currentProject.generate_project()
     if status == 1:
@@ -122,6 +142,28 @@ def add_member():
     current_member = MemberData(name, age, working_description, resume, title, year_of_exp, employee_id)
     currentProject.addMember(current_member)
     return jsonify({"Success": "Member Added"}), 200
+
+@app.route('/remove_member', methods=['POST'])
+def remove_member():
+    global currentProject
+    global gitHandler
+
+    if not currentProject:
+        return jsonify({"Error": "Project not initialized"}), 400
+    
+    try:
+        member_id = int(request.json["member_id"])
+    except:
+        return jsonify({"Error": "Incorrect Input for Member"}), 400
+
+    members = currentProject.members
+    
+    for m in members:
+        if m.employee_id == member_id:
+            currentProject.members.remove(m)
+            break
+    
+    return jsonify({"Success": "Member Removed"}), 200
 
 
 @app.route("/standup", methods = ["POST"])
