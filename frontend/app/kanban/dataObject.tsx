@@ -11,12 +11,16 @@ export const columnData = [
         text: 'In Progress'
     },
     {
-        id: 'completed',
-        text: 'Completed'
+        id: 'qa',
+        text: 'QA'
     },
     {
-        id: 'released',
-        text: 'Released'
+        id: 'pr',
+        text: 'PR'
+    },
+    {
+        id: 'closed',
+        text: 'Closed'
     },
 ];
 
@@ -29,8 +33,8 @@ export const cardData = [
     },
     {
         id: 'abcd',
-        column_id: 'inProgress',
-        text: 'Card 2'
+        column_id: 'inProgress',    
+        text: 'Card 5'
     },
     {
         id: 'abcde',
@@ -45,7 +49,7 @@ export const cardData = [
     {
         id: 'abcdefg',
         column_id: 'todo',
-        text: 'Card 5'
+        text: 'Card 2'
     },
 
 ];

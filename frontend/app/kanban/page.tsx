@@ -30,7 +30,8 @@ export default function KanbanBoard(props: Props) {
                                 </div>
 
                                 
-                                <div className="flex-1 flex-col gap-2 overflow-auto bg-gray-700/30 rounded-lg p-4 overflow auto" onDragOver={(e) => {
+                                <div className="flex-col gap-2 overflow-auto text-black bg-gray-700/30 rounded-lg p-4" 
+                                onDragOver={(e) => {
                                     e.preventDefault();
                                 }}
                                 onDrop={()=>{
