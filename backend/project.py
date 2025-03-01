@@ -244,7 +244,7 @@ class Project:
         prompt += '''
         {
             'title': The Ticket Title
-            'ticket_num': Ticker Number (if you made new tickets, do not add this field)
+            'ticket_num': Ticket Number (if you made new tickets, do not add this field)
             'description': Description of the ticket and what needs to be done
             'assignments': [List of members assigned to this ticket, by employee ID]
             'deadline': Date for when this ticket should be completed
