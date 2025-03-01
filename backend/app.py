@@ -164,6 +164,7 @@ def get_ticket_detail():
         return jsonify({"Error": "Could not parse ticket number"}), 400
 
 
+    gitHandler.fetch_new_commits()
     all_commits = gitHandler.get_all_commits()
 
     tickets = currentProject.compile_tickets()
