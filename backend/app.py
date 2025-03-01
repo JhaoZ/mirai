@@ -124,6 +124,36 @@ def add_member():
     return jsonify({"Success": "Member Added"}), 200
 
 
+@app.route("/standup", methods = ["POST"])
+def standup():
+    global currentProject
+    global gitHandler
+
+    if currentProject is None:
+        return jsonify({"Error": "Could not get tickets because current project has not been inited"}), 400
+
+    query = ""
+    employee_id = ""
+
+    try:
+        query = str(response.json["query"])
+        employee_id = str(response.json['id'])
+    except Exception as e:
+        print(e)
+        return jsonify({"Error": "Query or ID not in response"}), 400
+
+
+    status = currentProject.standup(query, employee_id)
+
+    if status == 1:
+        return jsonify({"Success": "Project updated succesfully"}), 200
+    else:
+        return jsonify({"Error": "Project update failed"}), 400
+
+    
+
+
+
 @app.route("/get_tickets", methods = ["GET"])
 def get_tickets():
 
@@ -131,7 +161,7 @@ def get_tickets():
     global gitHandler
 
     if currentProject is None:
-        return jsonify({"Error": "Could not get tickets because current project has not been inited"})
+        return jsonify({"Error": "Could not get tickets because current project has not been inited"}), 400
 
     return jsonify({"Data":currentProject.get_tickets_json()}), 200
 
