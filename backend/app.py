@@ -5,6 +5,7 @@ from member import MemberData
 from project import Project
 from git_handler import GitHubRepo
 from ticket import Ticket
+import json
 
 
 app = Flask(__name__)
