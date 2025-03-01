@@ -217,7 +217,7 @@ def update_tickets():
         return jsonify({"Error": "Could not get tickets because current project has not been inited"}), 400
     
     try:
-        tickets = list(request.json['tickets'])
+        tickets = json.loads(request.json['tickets'])
     except:
         return jsonify({"Error": "Missing/Incorrect Input"}), 400
 

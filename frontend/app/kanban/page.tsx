@@ -12,7 +12,7 @@ interface Props {}
 export default function KanbanBoard(props: Props) {
     const [cards, setCards] = useState<CardType[]>([]); //sets up the cards inside the kanban board
     const [kanbans, setKanbans] = useState(columnData); //sets up the kanban column names 
-    const [draggableElement, setDraggableElement] = useState<{card_id: string, column_id: string} | null>(null);
+    const [draggableElement, setDraggableElement] = useState<{ticket_num: string, category: string} | null>(null);
 
     
     //endpoint for getting tickets 
@@ -25,11 +25,14 @@ export default function KanbanBoard(props: Props) {
                 let tickets = JSON.parse(data.Data);
                 console.log(tickets)
                 const converted = tickets.map((t : any) => ({
-                    id: t.ticket_num,
-                    column_id: t.category,
-                    text: t.description,
+                    ticket_num: t.ticket_num,
+                    category: t.category,
+                    description: t.description,
                     deadline: t.deadline,
-                    priority: t.priority
+                    priority: t.priority,
+                    dev_type: t.dev_type,
+                    title: t.title,
+                    assignments: t.assignments
                 }));
                 console.log(converted);
                 setCards(converted);
@@ -38,7 +41,8 @@ export default function KanbanBoard(props: Props) {
         .catch((err) => console.log(err));
 
     }, []);
-    
+
+   
 
 
     return (
@@ -61,15 +65,29 @@ export default function KanbanBoard(props: Props) {
                                 onDragOver={(e) => {
                                     e.preventDefault();
                                 }}
-                                onDrop={()=>{
-                                    //need to fix the div so that the drop target covers the entire board. 
+                                onDrop={async ()=>{
                                     onDropCard(items.id, draggableElement, setCards);
+                                    try {
+                                        const response = await fetch("http://127.0.0.1:5000/update_tickets", {
+                                            method: "POST",
+                                            headers: {
+                                                "Content-Type": "application/json",
+                                            },
+                                            body: JSON.stringify({
+                                                'tickets': JSON.stringify(cards),
+                                            })
+                                        });
+                                        console.log(JSON.stringify(cards))
+                                    } catch (error) {
+                                        console.error(error);
+                                    }
                                 }}>
 
+
                                     {
-                                        cards.filter((c) => c.column_id === items.id).map((c) => (
-                                            <div key={c.id} className="bg-gray-200 p-4 h-32 mb-2 rounded" draggable onDragStart={() => {onDragCard(c.id, c.column_id, setDraggableElement)}}>
-                                                <p>{c.text}</p>
+                                        cards.filter((c) => c.category === items.id).map((c) => (
+                                            <div key={c.ticket_num} className="bg-gray-200 p-4 h-32 mb-2 rounded" draggable onDragStart={()=>{onDragCard(c.ticket_num, c.category, setDraggableElement);}}>
+                                                <p>{c.ticket_num} - {c.title}</p>
                                             </div>
                                         ))
                                     }

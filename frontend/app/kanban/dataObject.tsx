@@ -26,12 +26,14 @@ export const columnData = [
 
 
 export interface CardType {
-    id: string; //this is ticket_number on the backend 
-    column_id: string; //this maps to category on the backend 
-    text: string; //this maps to description on the backend
+    ticket_num: string; //this is ticket_number on the backend 
+    title: string;
+    category: string; //this maps to category on the backend 
+    description: string; //this maps to description on the backend
     deadline: string; //this maps to deadline on the backend
     priority: number; //this map to priority on the backend
     assignments: string[] //this maps to assignments on the backend
+    dev_type: string; // dev type for which board
 }
 
 export const initialCardData: CardType[] = [
