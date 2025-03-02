@@ -254,7 +254,7 @@ useEffect(() => {
                         className="bg-[#262626] shadow-md p-3 mb-2 rounded-lg border-l-4 border-green-500 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl relative"
                         draggable
                         onDragStart={() => onDragCard(c.ticket_num, c.category, setDraggableElement)}
-                                                onClick={() => handleCardClick(c)}
+                                                
                     >
                         {/* Ticket Number Badge */}
                         <div className="absolute top-1 left-1 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow">
@@ -264,7 +264,7 @@ useEffect(() => {
                         {/* Info Button */}
                         <button 
                             className="absolute top-1 right-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-full shadow transition text-[12px] px-1"
-                            onClick={() => console.log("Info clicked", c)}
+                            onClick={() => handleCardClick(c)}
                         >
                             ℹ️
                         </button>
