@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from "react";
 import { columnData, CardType } from "./dataObject";
 import { onDragCard, onDropCard } from "./cardFunctionality";
-import {useRouter} from 'next/router';
+import {useRouter} from 'next/navigation';
 
 /*
 Reference tutorial for base code: https://youtu.be/bwIs_eOe6Z8?si=d0tvm3x5YJspTkqg
@@ -22,6 +22,8 @@ export default function KanbanBoard(props: Props) {
     const [employeeId, setEmployeeId] = useState("");
     const [standupText, setStandupText] = useState("");
     const [loading, setLoading] = useState(false);
+
+    const router = useRouter();
 
 
     //endpoint for getting tickets 
@@ -69,16 +71,24 @@ export default function KanbanBoard(props: Props) {
 
 
 
+    const handleCardClick = (card: CardType) => {
+        const queryParams = new URLSearchParams({
+            ticket_num: card.ticket_num,
+            category: card.category,
+            description: card.description,
+            deadline: card.deadline,
+            priority: card.priority.toString(),
+            dev_type: card.dev_type,
+            title: card.title,
+            assignments: card.assignments.join(',')  // join array into comma-separated string
+        });
+        router.push(`/cardDetail?${queryParams.toString()}`);
+    };
 
 
 
 
 
-
-
-
-
-    
     const handleSubmitStandup = () => {
         console.log("Submitting standup...");
         setLoading(true);  // Start loading
@@ -176,6 +186,7 @@ export default function KanbanBoard(props: Props) {
                                                 className="bg-white shadow-lg p-4 h-36 mb-3 rounded-lg border-l-4 border-green-500 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl flex flex-col relative"
                                                 draggable
                                                 onDragStart={() => onDragCard(c.ticket_num, c.category, setDraggableElement)}
+                                                onClick={() => handleCardClick(c)}
                                             >
                                                 {/* Ticket Number Badge */}
                                                 <div className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-md shadow">
