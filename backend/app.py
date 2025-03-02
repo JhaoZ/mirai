@@ -310,7 +310,7 @@ def analyze_commit():
     
     commit_message, commit_content = commit
 
-    analyzation = currentProject.analyze_commit(commit_content)
+    analyzation = currentProject.analyze_github_commit(commit_content)
 
     return jsonify({"Success": analyzation}), 200
 

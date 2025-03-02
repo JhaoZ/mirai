@@ -17,6 +17,11 @@ export default function CardDetails() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // State to hold analysis result per commit hash
+  const [commitAnalyses, setCommitAnalyses] = useState<Record<string, string>>({});
+  // Optional: loading state per commit analysis
+  const [commitAnalysisLoading, setCommitAnalysisLoading] = useState<Record<string, boolean>>({});
+
   const card: CardType = {
     ticket_num: searchParams.get("ticket_num") || "",
     category: searchParams.get("category") || "",
@@ -62,6 +67,34 @@ export default function CardDetails() {
     }
     setLoading(false);
     setShowCommits(true);
+  };
+
+  const analyzeCommit = async (commitHash: string) => {
+    // Set loading state for this commit analysis
+
+    console.log("Commit: " + commitHash)
+    setCommitAnalysisLoading((prev) => ({ ...prev, [commitHash]: true }));
+    try {
+      const response = await fetch("http://127.0.0.1:5000/analyze_commit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ hash: commitHash }),
+      });
+      const data = await response.json();
+      if (data.Error) {
+        setCommitAnalyses((prev) => ({ ...prev, [commitHash]: data.Error }));
+      } else if (data.Success) {
+        setCommitAnalyses((prev) => ({ ...prev, [commitHash]: data.Success }));
+      } else {
+        setCommitAnalyses((prev) => ({ ...prev, [commitHash]: "Unexpected response" }));
+      }
+    } catch (err) {
+      console.error(err);
+      setCommitAnalyses((prev) => ({ ...prev, [commitHash]: "Failed to analyze commit" }));
+    }
+    setCommitAnalysisLoading((prev) => ({ ...prev, [commitHash]: false }));
   };
 
   return (
@@ -123,21 +156,35 @@ export default function CardDetails() {
             {loading && <p className="text-white">Loading commits...</p>}
             {error && <p className="text-red-400">{error}</p>}
             {!loading && !error && commits.length > 0 && (
-              <ul className="list-disc list-inside text-white">
-                {commits.map((commit, index) => (
-                  <li key={index}>
-                    <a
-                      href={commit.url}
-                      className="text-green-400 hover:underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {commit.hash.slice(0, 7)}
-                    </a>
-                    {": " + commit.message}
-                  </li>
-                ))}
-              </ul>
+ <ul className="list-none list-inside text-white space-y-4">
+ {commits.map((commit, index) => (
+   <li key={index}>
+     <div>
+       <a
+         href={commit.url}
+         className="text-green-400 hover:underline"
+         target="_blank"
+         rel="noopener noreferrer"
+       >
+         {commit.hash.slice(0, 7)}
+       </a>
+       {": " + commit.message}
+     </div>
+     <button
+       onClick={() => analyzeCommit(commit.hash)}
+       className="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+     >
+       {commitAnalysisLoading[commit.hash] ? "Analyzing..." : "Analyze Commit"}
+     </button>
+     {commitAnalyses[commit.hash] && (
+       <p className="mt-2 text-sm text-gray-300">
+         Analysis: {commitAnalyses[commit.hash]}
+       </p>
+     )}
+   </li>
+ ))}
+</ul>
+
             )}
             {!loading && !error && commits.length === 0 && (
               <p className="text-white">No commits found for this ticket.</p>

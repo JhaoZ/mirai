@@ -1,4 +1,5 @@
 from requestor import prompt, prompt_project
+import requestor
 from datetime import datetime
 from member import MemberData
 import json
@@ -317,11 +318,7 @@ class Project:
         {
             'dev_type': [P&R,Design,Backend,Frontend,Admin,Marketing] - never change the ticket dev_type
             'title': The Ticket Title
-<<<<<<< HEAD
-            'ticket_num': Ticket Number (if you made new tickets, do not add this field)
-=======
             'ticket_num': Ticket Number (if you made new tickets, do not add this field) - never change the ticket number, it should be the same as before
->>>>>>> b8855745f949f7db4cea37a6a529b28190581048
             'description': Description of the ticket and what needs to be done
             'assignments': [List of members assigned to this ticket, by employee ID]
             'deadline': Date for when this ticket should be completed
@@ -354,7 +351,7 @@ class Project:
 
 
     def analyze_github_commit(self, commit_code):
-        prompt += "Given code for a commit, analyze and provide some feedback. Do not exceed 4 sentences and do not provide any code of yourself. Just comment on style and possible bugs.\n"
+        prompt = "Given code for a commit, analyze and provide some feedback. Do not exceed 4 sentences and do not provide any code of yourself. Just comment on style and possible bugs.\n"
         prompt += "Here are the project details that this commit belongs to:\n"
         prompt += f'''
             <title>{self.title}</title>
@@ -365,7 +362,7 @@ class Project:
             <intensity>{self.intensity}</intensity>\n
         '''
         prompt += f"The code is as follows:\n\n"
-        prompt += commit_code
+        prompt += commit_code[:10000]
         
         return requestor.prompt_project(prompt)
         
