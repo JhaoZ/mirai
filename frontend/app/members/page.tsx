@@ -17,6 +17,8 @@ export default function MembersPage() {
 
   const [members, setMembers] = useState<any[]>([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // Loading state
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setMember({ ...member, [e.target.name]: e.target.value });
@@ -66,6 +68,9 @@ export default function MembersPage() {
       return;
     }
 
+    setLoading(true); // Show loading state
+
+
     try {
         const response = await fetch("http://127.0.0.1:5000/start_project", {
             method: "POST",
@@ -79,7 +84,9 @@ export default function MembersPage() {
         }
     } catch (error) {
         console.error("Error:", error);
-    } 
+    } finally {
+      setLoading(false); // Stop loading animation
+    }
   };
 
   return (
@@ -158,7 +165,11 @@ export default function MembersPage() {
             }`}
             disabled={members.length === 0}
           >
-            Confirm Members
+             {loading ? (
+              <div className="w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              "Confirm Members"
+            )}
           </button>
         </div>
       </form>

@@ -56,16 +56,25 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen space-y-6">
-      <h1 className="text-3xl font-bold">Welcome to mirAI</h1>
+    
+    <div className="flex flex-col items-center justify-center min-h-screen space-y-6 bg-gray-900 text-white">
+      <h1 className="text-4xl font-extrabold tracking-wide text-green-400">Welcome to mirAI</h1>
+      <img 
+                                src="/Sprite-0011.png" 
+                                alt="Kanban Board Logo" 
+                                className="h-20 w-auto"
+                            />
+      <p className="text-gray-400">AI-powered project management for developers</p>
+
+      {/* Start Project Button */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+        className="px-6 py-3 bg-green-500 text-black font-bold rounded-full shadow-lg transition-all duration-300 
+                   hover:bg-green-400 hover:scale-105 active:scale-95"
       >
-        Start New Project
+        🚀 Start New Project
       </button>
-
-      {/* Modal */}
+      <div className = "text-black">
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -125,7 +134,7 @@ export default function HomePage() {
             </form>
           </div>
         </div>
-      )}
+      )}</div>
     </div>
   );
 }
