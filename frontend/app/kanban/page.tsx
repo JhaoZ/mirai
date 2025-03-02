@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from "react";
 import { columnData, CardType } from "./dataObject";
 import { onDragCard, onDropCard } from "./cardFunctionality";
-import {useRouter} from 'next/router';
+import {useRouter} from 'next/navigation';
 
 /*
 Reference tutorial for base code: https://youtu.be/bwIs_eOe6Z8?si=d0tvm3x5YJspTkqg
@@ -28,7 +28,7 @@ export default function KanbanBoard(props: Props) {
 
     const [selectedFilter, setSelectedFilter] = useState<string | null>(null); // Track selected filter
 
-
+    const router = useRouter();
 
     const devTypeOptions = {
         "P&R": "Planning & Research",
@@ -114,13 +114,19 @@ useEffect(() => {
 
 
 
-
-
-
-
-
-
-
+    const handleCardClick = (card: CardType) => {
+        const queryParams = new URLSearchParams({
+            ticket_num: card.ticket_num,
+            category: card.category,
+            description: card.description,
+            deadline: card.deadline,
+            priority: card.priority.toString(),
+            dev_type: card.dev_type,
+            title: card.title,
+            assignments: card.assignments.join(',')  // join array into comma-separated string
+        });
+        router.push(`/cardDetail?${queryParams.toString()}`);
+    };
 
 
     

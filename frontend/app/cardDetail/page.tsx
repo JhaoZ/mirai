@@ -1,12 +1,12 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CardType } from "../kanban/dataObject"; // Adjust the import path accordingly
 
 export default function CardDetails() {
   const searchParams = useSearchParams();
+  const [showCommits, setShowCommits] = useState(false);
 
-  // Parse card data with correct types
   const card: CardType = {
     ticket_num: searchParams.get("ticket_num") || "",
     category: searchParams.get("category") || "",
@@ -20,10 +20,17 @@ export default function CardDetails() {
       : [],
   };
 
+  // Hard-coded commit messages for demonstration purposes with links for commit numbers.
+  const commitMessages = [
+    { label: "Commit 1", message: "Fixed minor bugs in ticket handling." },
+    { label: "Commit 2", message: "Updated styling and transitions." },
+    { label: "Commit 3", message: "Refactored code for performance improvements." },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-900 via-black to-gray-900 flex items-center justify-center p-6">
       <div className="max-w-md w-full bg-black/80 rounded-3xl shadow-2xl border border-green-500 p-8 transform transition duration-500 hover:scale-105">
-        <h1 className="text-4xl font-extrabold text-green-400 mb-6 tracking-wide">
+        <h1 style={{ color: "#68d391", fontWeight: 800 }} className="text-4xl mb-6 tracking-wide">
           {card.title}
         </h1>
         <div className="space-y-4 text-lg">
@@ -46,9 +53,31 @@ export default function CardDetails() {
             <span className="font-bold text-green-300">Developer Type:</span> {card.dev_type}
           </p>
           <p className="text-white">
-            <span className="font-bold text-green-300">Assignments:</span> {card.assignments.length > 0 ? card.assignments.join(", ") : "None"}
+            <span className="font-bold text-green-300">Assignments:</span>{" "}
+            {card.assignments.length > 0 ? card.assignments.join(", ") : "None"}
           </p>
         </div>
+        <button
+          onClick={() => setShowCommits(true)}
+          className="mt-6 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+        >
+          Examine Git Commits
+        </button>
+        {showCommits && (
+          <div className="mt-6 bg-gray-800 rounded-xl p-4 border border-green-300">
+            <h2 className="text-2xl font-bold text-green-400 mb-4">Commit Messages</h2>
+            <ul className="list-disc list-inside text-white">
+              {commitMessages.map((commit, index) => (
+                <li key={index}>
+                  <a href="#" className="text-green-400 hover:underline">
+                    {commit.label}
+                  </a>
+                  {": " + commit.message}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
