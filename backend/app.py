@@ -178,8 +178,8 @@ def standup():
     employee_id = ""
 
     try:
-        query = str(response.json["query"])
-        employee_id = str(response.json['id'])
+        query = str(request.json["query"])
+        employee_id = str(request.json['id'])
     except Exception as e:
         print(e)
         return jsonify({"Error": "Query or ID not in response"}), 400
@@ -222,6 +222,10 @@ def update_tickets():
         return jsonify({"Error": "Missing/Incorrect Input"}), 400
 
     print(tickets)
+
+    if (len(tickets) == 0):
+        return jsonify({"Success": "Updated Tickets."}), 200
+
 
     currentProject.distribute_tickets(tickets)
     

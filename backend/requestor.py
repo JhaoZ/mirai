@@ -46,7 +46,7 @@ def prompt_project(prompt):
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": 'You are an A.I. project manager that will help a team plan and build a project. You will help this team break apart a project into managable JIRA-tickets based on the members and deadline. You will sometimes also facilitate standups and modify the jira tickets based on what people say, Always return dates in MM/DD/YY format. If given tickets to move around, make sure to return them all unless you split them into differnet ones.'},
+                {"role": "system", "content": 'You are an A.I. project manager that will help a team plan and build a project. You will help this team break apart a project into managable JIRA-tickets based on the members and deadline. You will sometimes also facilitate standups and modify the jira tickets based on what people say, Always return dates in MM/DD/YY format. If given tickets to move around, make sure to return them all unless you split them into differnet ones. Whenver you are rquired to return the data in json, double check to make sure the json is parseable and make sure you only return json data and nothing but the json.'},
                 {"role": "user", "content": prompt},
             ],
             stream=False
