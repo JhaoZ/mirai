@@ -289,7 +289,7 @@ def get_single_ticket():
     
     return jsonify({"Success": curr_ticket}), 200
 
-@app.route("/analyze_commit", methods = ["GET"])
+@app.route("/analyze_commit", methods = ["POST"])
 def analyze_commit():
     global currentProject
     global gitHandler
@@ -319,7 +319,7 @@ def analyze_commit():
     
 
 
-@app.route("/get_ticket_github_detail", methods = ['GET'])
+@app.route("/get_ticket_github_detail", methods = ['POST'])
 def get_ticket_detail():
 
     global currentProject
