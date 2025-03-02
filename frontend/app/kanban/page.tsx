@@ -24,7 +24,21 @@ export default function KanbanBoard(props: Props) {
     const [loading, setLoading] = useState(false);
 
     const [projectTitle, setProjectTitle] = useState("");
-const [projectDescription, setProjectDescription] = useState("");
+    const [projectDescription, setProjectDescription] = useState("");
+
+    const [selectedFilter, setSelectedFilter] = useState<string | null>(null); // Track selected filter
+
+
+
+    const devTypeOptions = {
+        "P&R": "Planning & Research",
+        "Design": "UX/UI Design",
+        "Backend": "Backend Development",
+        "Frontend": "Frontend Development",
+        "Admin": "Admin Dashboard",
+        "Marketing": "Marketing & Outreach",
+    };
+
 
 // Fetch Project Title
 useEffect(() => {
@@ -161,6 +175,11 @@ useEffect(() => {
             setStandupText("");
         });
     };
+
+    // Function to toggle filter
+    const toggleFilter = (filter: string) => {
+        setSelectedFilter(prevFilter => prevFilter === filter ? null : filter);
+    };
     
 
     return (
@@ -212,6 +231,28 @@ useEffect(() => {
                         
 
 
+             {/* Filter Bar */}
+             <div className="flex flex-wrap gap-2 p-4 justify-center bg-black text-white border-b border-gray-700">
+                    {Object.entries(devTypeOptions).map(([key, label]) => (
+                        <button
+                            key={key}
+                            className={`px-4 py-2 text-sm font-mono rounded-md transition-all
+                                ${selectedFilter === key ? "bg-green-500 text-black border-green-300 shadow-lg" : "bg-gray-800 text-white border-gray-500 hover:bg-gray-700"} 
+                                border`}
+                            onClick={() => toggleFilter(key)}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                    {/* Reset Filter Button */}
+                    <button
+                        className="px-4 py-2 text-sm font-mono bg-red-600 text-white border border-red-400 rounded-md hover:bg-red-500 transition-all"
+                        onClick={() => setSelectedFilter(null)}
+                    >
+                        Reset Filter
+                    </button>
+                </div>
+
     
                         {/* Kanban Board */}
                         
@@ -232,40 +273,43 @@ useEffect(() => {
                 <div></div>
             </div>
 
-            {/* Ticket Container */}
+{/* Ticket Container */}
+<div 
+    className="p-2 text-green-400 font-mono text-xs bg-black/80 h-[450px] overflow-auto scrollbar-thin scrollbar-track-gray-700 scrollbar-thumb-gray-500"
+    onDragOver={(e) => e.preventDefault()}
+    onDrop={() => onDropCard(items.id, draggableElement, setCards)}
+>
+    {cards
+        .filter((c) => c.category === items.id) // Show tickets in the right column
+        .filter((c) => !selectedFilter || c.dev_type === selectedFilter) // Apply the filter correctly
+        .map((c) => (
             <div 
-                className="p-2 text-green-400 font-mono text-xs bg-black/80 h-[450px] overflow-auto scrollbar-thin scrollbar-track-gray-700 scrollbar-thumb-gray-500"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={() => onDropCard(items.id, draggableElement, setCards)}
+                key={c.ticket_num} 
+                className="bg-[#262626] shadow-md p-3 mb-2 rounded-lg border-l-4 border-green-500 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl relative"
+                draggable
+                onDragStart={() => onDragCard(c.ticket_num, c.category, setDraggableElement)}
             >
-                {cards.filter((c) => c.category === items.id).map((c) => (
-                    <div 
-                        key={c.ticket_num} 
-                        className="bg-[#262626] shadow-md p-3 mb-2 rounded-lg border-l-4 border-green-500 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl relative"
-                        draggable
-                        onDragStart={() => onDragCard(c.ticket_num, c.category, setDraggableElement)}
-                    >
-                        {/* Ticket Number Badge */}
-                        <div className="absolute top-1 left-1 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow">
-                            {c.ticket_num}
-                        </div>
+                {/* Ticket Number Badge */}
+                <div className="absolute top-1 left-1 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow">
+                    {c.ticket_num}
+                </div>
 
-                        {/* Info Button */}
-                        <button 
-                            className="absolute top-1 right-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-full shadow transition text-[12px] px-1"
-                            onClick={() => console.log("Info clicked", c)}
-                        >
-                            ℹ️
-                        </button>
+                {/* Info Button */}
+                <button 
+                    className="absolute top-1 right-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-full shadow transition text-[12px] px-1"
+                    onClick={() => console.log("Info clicked", c)}
+                >
+                    ℹ️
+                </button>
 
-                        {/* Card Content */}
-                        <div className="mt-1">
-                            <p className="text-[12px] font-semibold text-green-400 tracking-wide">
-                                {c.title}
-                            </p>
-                            <p className="text-[10px] text-gray-500">Deadline: {c.deadline}</p>
-                        </div>
-                    </div>
+                {/* Card Content */}
+                <div className="mt-1">
+                    <p className="text-[12px] font-semibold text-green-400 tracking-wide">
+                        {c.title}
+                    </p>
+                    <p className="text-[10px] text-gray-500">Deadline: {c.deadline}</p>
+                </div>
+            </div>
                 ))}
             </div>
         </div>
