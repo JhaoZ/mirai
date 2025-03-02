@@ -23,6 +23,37 @@ export default function KanbanBoard(props: Props) {
     const [standupText, setStandupText] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const [projectTitle, setProjectTitle] = useState("");
+const [projectDescription, setProjectDescription] = useState("");
+
+// Fetch Project Title
+useEffect(() => {
+    fetch("http://127.0.0.1:5000/get_project_title")
+    .then((res) => res.json())
+    .then((data) => {
+        if (data["Project Title"]) {
+            setProjectTitle(data["Project Title"]);
+        } else {
+            setProjectTitle("Project not initialized.");
+        }
+    })
+    .catch((err) => console.log("Error fetching project title:", err));
+}, []);
+
+// Fetch Project Description
+useEffect(() => {
+    fetch("http://127.0.0.1:5000/get_project_description")
+    .then((res) => res.json())
+    .then((data) => {
+        if (data["Project Title"]) {
+            setProjectDescription(data["Project Title"]);
+        } else {
+            setProjectDescription("Project not initialized.");
+        }
+    })
+    .catch((err) => console.log("Error fetching project description:", err));
+}, []);
+
 
     //endpoint for getting tickets 
     useEffect(() => {
@@ -135,74 +166,108 @@ export default function KanbanBoard(props: Props) {
     return (
             <>
                 {/* Wrapper for entire screen */}
-                <div className="relative min-h-screen">
+                <div className="relative min-h-screen bg-gradient-to-r from-gray-900 via-black to-gray-900 animate-gradient">
+
+
     
                     {/* Dimmed background when Standup form is open */}
                     {showStandupForm && (
                         <div className="absolute inset-0 bg-gray-900 bg-opacity-25 z-40 pointer-events-none"></div>
                     )}
+
+
+
     
                     {/* Content (Kanban board) */}
                     <div className={`relative z-10 ${showStandupForm ? "opacity-50" : "opacity-100"}`}>
                         {/* Standup Button */}
-                        <div className="flex justify-between items-center p-4 bg-gray-800 text-white">
-                            <h1 className="text-2xl font-bold">Kanban Board</h1>
-                            <button 
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md shadow-md transition"
-                                onClick={() => setShowStandupForm(true)}
-                            >
-                                Standup
-                            </button>
+                        <div className="flex justify-between items-center p-4 bg-black text-white">
+                        <img 
+                                src="/Sprite-0011.png" 
+                                alt="Kanban Board Logo" 
+                                className="h-20 w-auto"
+                            />
+                            
+    <h2 className="text-sm font-bold">{projectTitle || "Loading..."}</h2>
+    
+
+                                
+                                <button 
+                                    className="bg-black border border-green-500 text-green-400 font-mono px-6 py-2 rounded-md shadow-md transition-all
+                                            hover:bg-green-500 hover:text-white hover:border-green-300 hover:shadow-lg hover:scale-105
+                                            active:scale-95 focus:ring-2 focus:ring-green-400"
+                                    onClick={() => setShowStandupForm(true)}
+                                >
+                                    ▶ Standup
+                                </button>
+
+
                         </div>
+
+                        
+
+
     
                         {/* Kanban Board */}
+                        
                         <div className="mt-8 p-2 flex flex-wrap gap-4 justify-center">
-                            {kanbans.map((items) => (
-                                <div 
-                                    key={items.id}
-                                    className="flex-1 min-w-[250px] text-center text-white text-lg font-semibold sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 p-3 border border-gray-500 bg-gray-800/50 rounded-lg shadow-md"
-                                >
-                                    <div>
-                                        <p>{items.text}</p>
-                                    </div>
-                                    <div 
-                                        className="flex-col gap-2 overflow-auto text-black bg-gray-700/30 rounded-lg p-4"
-                                        onDragOver={(e) => e.preventDefault()}
-                                        onDrop={() => onDropCard(items.id, draggableElement, setCards)}
-                                    >
-                                        {cards.filter((c) => c.category === items.id).map((c) => (
-                                            <div 
-                                                key={c.ticket_num} 
-                                                className="bg-white shadow-lg p-4 h-36 mb-3 rounded-lg border-l-4 border-green-500 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl flex flex-col relative"
-                                                draggable
-                                                onDragStart={() => onDragCard(c.ticket_num, c.category, setDraggableElement)}
-                                            >
-                                                {/* Ticket Number Badge */}
-                                                <div className="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-md shadow">
-                                                    {c.ticket_num}
-                                                </div>
-    
-                                                {/* Info Button */}
-                                                <button 
-                                                    className="absolute top-2 right-2 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded-full shadow transition"
-                                                    onClick={() => console.log("Info clicked", c)}
-                                                >
-                                                    ℹ️
-                                                </button>
-    
-                                                {/* Card Content */}
-                                                <div className="mt-2">
-                                                    <p className="text-md font-semibold text-gray-800 tracking-wide">
-                                                        {c.title}
-                                                    </p>
-                                                    <p className="text-xs text-gray-500">Deadline: {c.deadline}</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
+    {kanbans.map((items) => (
+        <div 
+            key={items.id}
+            className="flex-1 min-w-[220px] max-w-[250px] text-white text-sm font-semibold rounded-lg shadow-lg overflow-hidden border border-gray-600 bg-[#1E1E1E]"
+        >
+            {/* Terminal Header Bar */}
+            <div className="flex items-center justify-between bg-gray-800 px-3 py-1">
+                <div className="flex space-x-1">
+                    <span className="w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                    <span className="w-2.5 h-2.5 bg-yellow-500 rounded-full"></span>
+                    <span className="w-2.5 h-2.5 bg-green-500 rounded-full"></span>
+                </div>
+                <p className="text-gray-300 text-xs font-mono">{items.text}</p>
+                <div></div>
+            </div>
+
+            {/* Ticket Container */}
+            <div 
+                className="p-2 text-green-400 font-mono text-xs bg-black/80 h-[450px] overflow-auto scrollbar-thin scrollbar-track-gray-700 scrollbar-thumb-gray-500"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => onDropCard(items.id, draggableElement, setCards)}
+            >
+                {cards.filter((c) => c.category === items.id).map((c) => (
+                    <div 
+                        key={c.ticket_num} 
+                        className="bg-[#262626] shadow-md p-3 mb-2 rounded-lg border-l-4 border-green-500 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl relative"
+                        draggable
+                        onDragStart={() => onDragCard(c.ticket_num, c.category, setDraggableElement)}
+                    >
+                        {/* Ticket Number Badge */}
+                        <div className="absolute top-1 left-1 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow">
+                            {c.ticket_num}
                         </div>
+
+                        {/* Info Button */}
+                        <button 
+                            className="absolute top-1 right-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-full shadow transition text-[12px] px-1"
+                            onClick={() => console.log("Info clicked", c)}
+                        >
+                            ℹ️
+                        </button>
+
+                        {/* Card Content */}
+                        <div className="mt-1">
+                            <p className="text-[12px] font-semibold text-green-400 tracking-wide">
+                                {c.title}
+                            </p>
+                            <p className="text-[10px] text-gray-500">Deadline: {c.deadline}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    ))}
+</div>
+
+
                     </div>
     
                     {/* Standup Form (Popup) */}
