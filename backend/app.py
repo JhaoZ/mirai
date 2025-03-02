@@ -312,7 +312,7 @@ def analyze_commit():
 
     analyzation = currentProject.analyze_commit(commit_content)
 
-    return jsonify({"Success": analyzation}), 400
+    return jsonify({"Success": analyzation}), 200
 
     
 
