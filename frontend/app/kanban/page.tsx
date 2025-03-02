@@ -192,14 +192,19 @@ useEffect(() => {
     
 
                                 
-                                <button 
-                                    className="bg-black border border-green-500 text-green-400 font-mono px-6 py-2 rounded-md shadow-md transition-all
-                                            hover:bg-green-500 hover:text-white hover:border-green-300 hover:shadow-lg hover:scale-105
-                                            active:scale-95 focus:ring-2 focus:ring-green-400"
-                                    onClick={() => setShowStandupForm(true)}
-                                >
-                                    ▶ Standup
-                                </button>
+    <button 
+    className="relative px-6 py-3 text-green-300 font-mono text-lg uppercase tracking-widest 
+               bg-transparent border-2 border-green-400 rounded-lg transition-all 
+               before:absolute before:inset-0 before:bg-green-400/10 before:blur-md before:rounded-lg
+               hover:text-white hover:bg-green-400 hover:border-green-300 hover:shadow-green-400/50 
+               active:scale-95 focus:ring-2 focus:ring-green-400/60"
+    onClick={() => setShowStandupForm(true)}
+>
+    ⌨️ Stand Up
+</button>
+
+
+
 
 
                         </div>
