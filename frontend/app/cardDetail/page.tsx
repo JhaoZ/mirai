@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useSearchParams } from "next/navigation";
-import { CardType } from "./dataObject"; // Adjust the import path accordingly
+import { CardType } from "../kanban/dataObject"; // Adjust the import path accordingly
 
 export default function CardDetails() {
     const searchParams = useSearchParams();
